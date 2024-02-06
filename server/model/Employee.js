@@ -1,11 +1,5 @@
 const mongoose = require("mongoose");
 
-{
-  /*
-FirstName(string), LastName(string), Age(Integer), DateOfJoining(Date), Title(string),
-Department(string), EmployeeType(string), CurrentStatus(bool) (ie working=1, retired=0)
-*/
-}
 
 const EmployeeSchema = new mongoose.Schema({
   firstName: {

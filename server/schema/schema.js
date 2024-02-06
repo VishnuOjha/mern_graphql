@@ -296,6 +296,88 @@ const mutation = new GraphQLObjectType({
         return employee.save();
       },
     },
+
+    // update Employee
+    updateEmployee: {
+      type: EmployeeType,
+      args: {
+        id: { type: GraphQLNonNull(GraphQLID) },
+        firstName: { type: GraphQLString },
+        lastName: { type: GraphQLString },
+        age: { type: GraphQLString },
+        dateOfJoining: { type: GraphQLString },
+        title: {
+          type: new GraphQLEnumType({
+            name: "EmployeeTitleUpdate",
+            values: {
+              employee: { value: "Employee" },
+              manager: { value: "Manager" },
+              director: { value: "Director" },
+              vp: { value: "VP" },
+            },
+          }),
+        },
+        department: {
+          type: new GraphQLEnumType({
+            name: "EmployeeDepartmentUpdate",
+            values: {
+              it: { value: "IT" },
+              marketing: { value: "Marketing" },
+              hr: { value: "HR" },
+              engineering: { value: "Engineering" },
+            },
+          }),
+        },
+        employeeType: {
+          type: new GraphQLEnumType({
+            name: "EmployeeTypeUpdate",
+            values: {
+              full: { value: "FullTime" },
+              part: { value: "PartTime" },
+              contract: { value: "Contract" },
+              seasonal: { value: "Seasonal" },
+            },
+          }),
+        },
+        currentStatus: {
+          type: GraphQLBoolean,
+        },
+      },
+      resolve(parent, args) {
+        const employeeUpdate = Employee.findByIdAndUpdate(
+          args.id,
+          {
+            $set: {
+              firstName: args.firstName,
+              lastName: args.lastName,
+              age: args.age,
+              dateOfJoining: args.dateOfJoining,
+              title: args.title,
+              department: args.department,
+              employeeType: args.employeeType,
+              currentStatus: args.currentStatus,
+            },
+          },
+          {
+            new: true,
+          }
+        );
+
+        return employeeUpdate;
+      },
+    },
+    // delete employee
+    deleteEmployee: {
+      type: EmployeeType,
+      args: {
+        id: {
+          type: GraphQLNonNull(GraphQLID),
+        },
+      },
+      resolve(parent, args) {
+        return Employee.findByIdAndDelete(args.id);
+      },
+    },
   },
 });
 
