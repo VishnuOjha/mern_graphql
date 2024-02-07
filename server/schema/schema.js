@@ -57,7 +57,7 @@ const EmployeeType = new GraphQLObjectType({
     dateOfJoining: { type: GraphQLString },
     title: { type: GraphQLString },
     department: { type: GraphQLString },
-    EmployeeType: { type: GraphQLString },
+    employeeType: { type: GraphQLString },
     currentStatus: { type: GraphQLBoolean },
   }),
 });
