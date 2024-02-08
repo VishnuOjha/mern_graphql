@@ -1,8 +1,9 @@
 import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
 import { Routes, Route } from "react-router-dom";
-import EmpTable from "./component/EmpTable";
+import EmpTable from "./pages/EmpTable";
 import Navbar from "./component/Navbar";
 import Home from "./pages/Home";
+import EmpSearchTable from "./pages/EmpSearch";
 
 const cache = new InMemoryCache({
   typePolicies: {
@@ -36,6 +37,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/employee" element={<EmpTable />} />
+          <Route path="/search" element={<EmpSearchTable />} />
         </Routes>
       </ApolloProvider>
     </>

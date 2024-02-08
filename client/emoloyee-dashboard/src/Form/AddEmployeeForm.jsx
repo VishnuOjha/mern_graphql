@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Button,
   Dialog,
@@ -9,7 +9,7 @@ import {
 import "../app.css";
 import { useMutation } from "@apollo/client";
 import { ADD_EMP } from "../mutation/clientMutation";
-import GET_EMP from "../queries/getEmployee";
+import { GET_EMP } from "../queries/getEmployee";
 
 const AddUserModal = ({ open, handleClose }) => {
   const [formData, setFormData] = useState({
@@ -17,26 +17,27 @@ const AddUserModal = ({ open, handleClose }) => {
     LastName: "",
     Age: "",
     DateOfJoining: "",
-    Title: "Employee", // Default value
-    Department: "IT", // Default value
-    EmployeeType: "FullTime", // Default value
-    CurrentStatus: false,
+    Title: "employee", // Default value
+    Department: "it", // Default value
+    EmployeeType: "full", // Default value
+    CurrentStatus: true,
   });
-  // const EmpData = parseEmpData(formData);
-  // const [addEmployee] = useMutation(ADD_EMP, {
-  //   variables: {
-      
-  //   },
-  //   // update(cache, { data: { addEmployee } }) {
-  //   //   const { employees } = cache.readQuery({ query: GET_EMP });
-  //   //   cache.writeQuery({
-  //   //     query: GET_EMP,
-  //   //     data: {
-  //   //       employees: [...employees, addEmployee],
-  //   //     },
-  //   //   });
-  //   // },
-  // });
+  const EmpData = parseEmpData(formData);
+
+  const [addEmployee] = useMutation(ADD_EMP, {
+    variables: {
+      ...EmpData,
+    },
+    update(cache, { data: { addEmployee } }) {
+      const { employees } = cache.readQuery({ query: GET_EMP });
+      cache.writeQuery({
+        query: GET_EMP,
+        data: {
+          employees: [...employees, addEmployee],
+        },
+      });
+    },
+  });
 
   const [ageError, setAgeError] = useState("");
 
@@ -60,25 +61,9 @@ const AddUserModal = ({ open, handleClose }) => {
     }));
   };
 
-  useEffect(() => {
-    if (open || handleClose) {
-      setFormData({
-        FirstName: "",
-        LastName: "",
-        Age: "",
-        DateOfJoining: "",
-        Title: "",
-        Department: "",
-        EmployeeType: "",
-        CurrentStatus: true,
-      });
-      setAgeError("");
-    }
-  }, [open, handleClose]);
-
   const handleSave = () => {
     // Call the function to save the user
-    // addEmployee(formData);
+    addEmployee(formData);
 
     // Reset the form and close the modal
     setFormData({
@@ -86,10 +71,10 @@ const AddUserModal = ({ open, handleClose }) => {
       LastName: "",
       Age: "",
       DateOfJoining: "",
-      Title: "",
-      Department: "",
-      EmployeeType: "",
-      CurrentStatus: false,
+      Title: "employee", // Default value
+      Department: "it", // Default value
+      EmployeeType: "full", // Default value
+      CurrentStatus: true,
     });
     handleClose();
   };
@@ -158,10 +143,10 @@ const AddUserModal = ({ open, handleClose }) => {
               onChange={handleInputChange}
               className="selectField"
             >
-              <option value="Employee">Employee</option>
-              <option value="Manager">Manager</option>
-              <option value="Director">Director</option>
-              <option value="VP">VP</option>
+              <option value="employee">Employee</option>
+              <option value="manager">Manager</option>
+              <option value="director">Director</option>
+              <option value="vp">VP</option>
             </select>
           </div>
           <br />
@@ -173,10 +158,10 @@ const AddUserModal = ({ open, handleClose }) => {
               className="selectField"
               onChange={handleInputChange}
             >
-              <option value="IT">IT</option>
-              <option value="Marketing">Marketing</option>
-              <option value="HR">HR</option>
-              <option value="Engineering">Engineering</option>
+              <option value="it">IT</option>
+              <option value="marketing">Marketing</option>
+              <option value="hr">HR</option>
+              <option value="engineering">Engineering</option>
             </select>
           </div>
         </div>
@@ -191,10 +176,10 @@ const AddUserModal = ({ open, handleClose }) => {
               onChange={handleInputChange}
               className="selectField"
             >
-              <option value="FullTime">FullTime</option>
-              <option value="PartTime">PartTime</option>
-              <option value="Contract">Contract</option>
-              <option value="Seasonal">Seasonal</option>
+              <option value="full">FullTime</option>
+              <option value="part">PartTime</option>
+              <option value="contract">Contract</option>
+              <option value="seasonal">Seasonal</option>
             </select>
           </div>
           <br />
@@ -204,7 +189,7 @@ const AddUserModal = ({ open, handleClose }) => {
               type="checkbox"
               name="CurrentStatus"
               checked={formData.CurrentStatus}
-              onChange={handleInputChange}
+              // onChange={handleInputChange} // leave for update
             />
           </div>
         </div>
@@ -230,7 +215,7 @@ function parseEmpData(data) {
   return {
     firstName: data?.FirstName,
     lastName: data?.LastName,
-    age: data?.age,
+    age: data?.Age,
     dateOfJoining: data?.DateOfJoining,
     title: data?.Title,
     department: data?.Department,

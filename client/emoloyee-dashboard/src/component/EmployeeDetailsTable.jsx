@@ -7,8 +7,9 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
+import EmpRowTable from "./EmpRowTable";
 
-const MyTable = ({ data }) => {
+const EmpDetailsTable = ({ data }) => {
   return (
     <TableContainer component={Paper}>
       <Table>
@@ -25,30 +26,12 @@ const MyTable = ({ data }) => {
             <TableCell>Current Status</TableCell>
           </TableRow>
         </TableHead>
-        <TableBody>
-          { data?.length !== 0 ?  data?.map((user, index) => (
-            <TableRow key={user._id}>
-              <TableCell>{index + 1}</TableCell>
-              <TableCell>{user.firstName}</TableCell>
-              <TableCell>{user.lastName}</TableCell>
-              <TableCell>{user.age}</TableCell>
-              <TableCell>{user.dateOfJoining}</TableCell>
-              <TableCell>{user.title}</TableCell>
-              <TableCell>{user.department}</TableCell>
-              <TableCell>{user.employeeType}</TableCell>
-              <TableCell>
-                {user.CurrentStatus ? "Working" : "Retired"}
-              </TableCell>
-            </TableRow> 
-          )):  <>
-            <TableRow>
-              <TableCell>No Records</TableCell>
-            </TableRow>
-          </>}
+        <TableBody >
+          <EmpRowTable data={data} />
         </TableBody>
       </Table>
     </TableContainer>
   );
 };
 
-export default MyTable;
+export default EmpDetailsTable;

@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client";
 
-const GET_EMP = gql`
+export const GET_EMP = gql`
   query getEmployees {
     employees {
       id
@@ -16,4 +16,19 @@ const GET_EMP = gql`
   }
 `;
 
-export default GET_EMP
+export const SEARCH_EMPLOYEES = gql`
+  query SearchEmployees($searchTerm: String!) {
+    searchEmployee(searchTerm: $searchTerm) {
+      id
+      firstName
+      lastName
+      age
+      dateOfJoining
+      title
+      department
+      employeeType
+      currentStatus
+    }
+  }
+`;
+
