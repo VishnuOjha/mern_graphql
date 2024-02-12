@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   Button,
   Dialog,
@@ -8,8 +8,9 @@ import {
 } from "@material-ui/core";
 import "../app.css";
 import { useMutation } from "@apollo/client";
-import { ADD_EMP } from "../mutation/clientMutation";
+import { ADD_EMP, UPDATE_EMP } from "../mutation/clientMutation";
 import { GET_EMP } from "../queries/getEmployee";
+import { EmpContext } from "../context/EmpContext";
 
 const AddUserModal = ({ open, handleClose }) => {
   const [formData, setFormData] = useState({
@@ -22,8 +23,10 @@ const AddUserModal = ({ open, handleClose }) => {
     EmployeeType: "full", // Default value
     CurrentStatus: true,
   });
-  const EmpData = parseEmpData(formData);
+  const EmpData = parseEmpData(formData, updateEmpData);
+  const { updateEmpData } = useContext(EmpContext);
 
+  // add Employee
   const [addEmployee] = useMutation(ADD_EMP, {
     variables: {
       ...EmpData,
@@ -39,12 +42,22 @@ const AddUserModal = ({ open, handleClose }) => {
     },
   });
 
+
+  // update employee
+  const [updateEmployee] = useMutation(UPDATE_EMP, {
+    variables: {
+      ...EmpData,
+    },
+    refetchQueries: [{query: GET_EMP, variables: {id: updateEmpData?.id}}]
+  });
+
+  console.log("UPDATE", EmpData)
+
   const [ageError, setAgeError] = useState("");
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
     const inputValue = type === "checkbox" ? checked : value;
-
     if (name === "Age") {
       // Age validation
       const age = parseInt(inputValue, 10);
@@ -63,21 +76,65 @@ const AddUserModal = ({ open, handleClose }) => {
 
   const handleSave = () => {
     // Call the function to save the user
-    addEmployee(formData);
+    if (
+      formData.FirstName === "" ||
+      formData.LastName === "" ||
+      formData.Age === "" ||
+      formData.DateOfJoining === "" ||
+      formData.Title === "" ||
+      formData.Department === "" ||
+      formData.EmployeeType === "" ||
+      formData.CurrentStatus === ""
+    ) {
+      alert("Please fill the form properly.");
+    }
 
-    // Reset the form and close the modal
-    setFormData({
-      FirstName: "",
-      LastName: "",
-      Age: "",
-      DateOfJoining: "",
-      Title: "employee", // Default value
-      Department: "it", // Default value
-      EmployeeType: "full", // Default value
-      CurrentStatus: true,
-    });
-    handleClose();
+    if (updateEmpData?.id && updateEmpData) {
+      addEmployee(formData);
+      // Reset the form and close the modal
+      setFormData({
+        FirstName: "",
+        LastName: "",
+        Age: "",
+        DateOfJoining: "",
+        Title: "employee", // Default value
+        Department: "it", // Default value
+        EmployeeType: "full", // Default value
+        CurrentStatus: true,
+      });
+      handleClose();
+    } else {
+      addEmployee(formData);
+      // Reset the form and close the modal
+      setFormData({
+        FirstName: "",
+        LastName: "",
+        Age: "",
+        DateOfJoining: "",
+        Title: "employee", // Default value
+        Department: "it", // Default value
+        EmployeeType: "full", // Default value
+        CurrentStatus: true,
+      });
+      handleClose();
+    }
   };
+
+  useEffect(() => {
+    if (updateEmpData !== "" && updateEmpData?.id) {
+      setFormData({
+        id: updateEmpData?.id,
+        FirstName: updateEmpData?.firstName,
+        LastName: updateEmpData?.lastName,
+        Age: updateEmpData?.age,
+        DateOfJoining: updateEmpData?.dateOfJoining,
+        Title: updateEmpData?.title, // Default value
+        Department: updateEmpData?.department, // Default value
+        EmployeeType: updateEmpData?.employeeType, // Default value
+        CurrentStatus: updateEmpData?.currentStatus,
+      });
+    }
+  }, [updateEmpData]);
 
   return (
     <Dialog
@@ -188,7 +245,8 @@ const AddUserModal = ({ open, handleClose }) => {
             <input
               type="checkbox"
               name="CurrentStatus"
-              checked={formData.CurrentStatus}
+              defaultChecked
+              // checked={formData.CurrentStatus}
               // onChange={handleInputChange} // leave for update
             />
           </div>

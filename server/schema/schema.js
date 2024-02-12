@@ -46,7 +46,6 @@ const ClientType = new GraphQLObjectType({
 });
 
 // Employee Type
-
 const EmployeeType = new GraphQLObjectType({
   name: "Employee",
   fields: () => ({
@@ -105,6 +104,49 @@ const RootQuery = new GraphQLObjectType({
       },
       resolve(parent, args) {
         return Employee.findById(args.id);
+      },
+    },
+    searchEmployee: {
+      type: new GraphQLList(EmployeeType),
+      args: {
+        searchTerm: { type: GraphQLString },
+      },
+      resolve(parent, args) {
+        if (!args.searchTerm) {
+          return []; // Return an empty array if no searchTerm is provided
+        }
+
+        // // Case-insensitive regex
+        // const regex = new RegExp(args.searchTerm, "i");
+        // console.log(
+        //   "ref",
+        //   Employee.find({
+        //     firstName: { $regex: regex },
+        //     // { lastName: { $regex: regex } },
+        //     // { age: { $regex: regex } },
+        //     // { dateOfJoining: { $regex: regex } },
+        //     // { title: { $regex: regex } },
+        //     // { department: { $regex: regex } },
+        //     // { employeeType: { $regex: regex } },
+        //     // { currentStatus: { $regex: regex } },
+        //     // Add more fields as needed
+        //   })
+        // );
+
+        return Employee.find({
+          $or: [
+            { firstName: { $regex: String(args.searchTerm), $options: 'i' } },
+            { lastName: { $regex: String(args.searchTerm), $options: 'i' } },
+            // Use $eq for non-string fields like age and currentStatus
+            { age: { $eq: args.searchTerm } },
+            { dateOfJoining: { $regex: String(args.searchTerm), $options: 'i' } },
+            { title: { $regex: String(args.searchTerm), $options: 'i' } },
+            { department: { $regex: String(args.searchTerm), $options: 'i' } },
+            { employeeType: { $regex: String(args.searchTerm), $options: 'i' } },
+            // Use $eq for non-string fields like currentStatus
+            { currentStatus: { $eq: args.searchTerm.toLowerCase() === 'true' } },
+          ],
+        });
       },
     },
   },

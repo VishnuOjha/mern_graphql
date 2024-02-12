@@ -4,11 +4,11 @@ import EmpDetailsTable from "../component/EmployeeDetailsTable";
 import AddUserModal from "../Form/AddEmployeeForm";
 import { useQuery } from "@apollo/client";
 import { GET_EMP } from "../queries/getEmployee";
-import EmployeeSearch from "../component/EmployeeSearch";
+import { EmpContext } from "../context/EmpContext";
 
 const EmpTable = () => {
   const [open, setOpen] = useState(false);
-
+  const [updateEmpData, setUpdateEmpData] = useState("");
   const { loading, error, data } = useQuery(GET_EMP);
 
   const handleClose = () => {
@@ -18,17 +18,33 @@ const EmpTable = () => {
   if (loading) return <p>Loading.....</p>;
   if (error) return <p>Something went wrong</p>;
 
+  const contextValue = {
+    updateEmpData,
+    setUpdateEmpData,
+    setOpen,
+  };
+
+
   return (
-    <div className="root">
-      <div className="emp-nav">
-        <div></div>
-        <div>
-          <button onClick={() => setOpen(true)}>Add Employee</button>
+    <EmpContext.Provider value={contextValue}>
+      <div className="root">
+        <div className="emp-nav">
+          <div></div>
+          <div>
+            <button onClick={() => setOpen(true)}>Add Employee</button>
+          </div>
         </div>
+        <EmpDetailsTable
+          data={data?.employees}
+          setOpen={setOpen}
+        />
+        <AddUserModal
+          open={open}
+          handleClose={handleClose}
+          updateData={updateEmpData}
+        />
       </div>
-      <EmpDetailsTable data={data?.employees} />
-      <AddUserModal open={open} handleClose={handleClose} />
-    </div>
+    </EmpContext.Provider>
   );
 };
 
