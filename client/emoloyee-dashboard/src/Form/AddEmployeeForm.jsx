@@ -23,8 +23,9 @@ const AddUserModal = ({ open, handleClose }) => {
     EmployeeType: "full", // Default value
     CurrentStatus: true,
   });
-  const EmpData = parseEmpData(formData, updateEmpData);
   const { updateEmpData } = useContext(EmpContext);
+
+  const EmpData = parseEmpData(formData, updateEmpData);
 
   // add Employee
   const [addEmployee] = useMutation(ADD_EMP, {
@@ -42,16 +43,15 @@ const AddUserModal = ({ open, handleClose }) => {
     },
   });
 
-
   // update employee
   const [updateEmployee] = useMutation(UPDATE_EMP, {
     variables: {
       ...EmpData,
     },
-    refetchQueries: [{query: GET_EMP, variables: {id: updateEmpData?.id}}]
+    refetchQueries: [{ query: GET_EMP, variables: { id: updateEmpData?.id } }],
   });
 
-  console.log("UPDATE", EmpData)
+  console.log("UPDATE", EmpData);
 
   const [ageError, setAgeError] = useState("");
 
@@ -76,47 +76,62 @@ const AddUserModal = ({ open, handleClose }) => {
 
   const handleSave = () => {
     // Call the function to save the user
-    if (
-      formData.FirstName === "" ||
-      formData.LastName === "" ||
-      formData.Age === "" ||
-      formData.DateOfJoining === "" ||
-      formData.Title === "" ||
-      formData.Department === "" ||
-      formData.EmployeeType === "" ||
-      formData.CurrentStatus === ""
-    ) {
-      alert("Please fill the form properly.");
-    }
 
     if (updateEmpData?.id && updateEmpData) {
-      addEmployee(formData);
-      // Reset the form and close the modal
-      setFormData({
-        FirstName: "",
-        LastName: "",
-        Age: "",
-        DateOfJoining: "",
-        Title: "employee", // Default value
-        Department: "it", // Default value
-        EmployeeType: "full", // Default value
-        CurrentStatus: true,
-      });
-      handleClose();
+      if (
+        formData.FirstName === "" ||
+        formData.LastName === "" ||
+        formData.Age === "" ||
+        formData.DateOfJoining === "" ||
+        formData.Title === "" ||
+        formData.Department === "" ||
+        formData.EmployeeType === "" ||
+        formData.CurrentStatus === ""
+      ) {
+        alert("Please fill the form properly.");
+      } else {
+        addEmployee(formData);
+        // Reset the form and close the modal
+        setFormData({
+          FirstName: "",
+          LastName: "",
+          Age: "",
+          DateOfJoining: "",
+          Title: "employee", // Default value
+          Department: "it", // Default value
+          EmployeeType: "full", // Default value
+          CurrentStatus: true,
+        });
+        handleClose();
+      }
+    
     } else {
-      addEmployee(formData);
-      // Reset the form and close the modal
-      setFormData({
-        FirstName: "",
-        LastName: "",
-        Age: "",
-        DateOfJoining: "",
-        Title: "employee", // Default value
-        Department: "it", // Default value
-        EmployeeType: "full", // Default value
-        CurrentStatus: true,
-      });
-      handleClose();
+      if (
+        formData.FirstName === "" ||
+        formData.LastName === "" ||
+        formData.Age === "" ||
+        formData.DateOfJoining === "" ||
+        formData.Title === "" ||
+        formData.Department === "" ||
+        formData.EmployeeType === "" ||
+        formData.CurrentStatus === ""
+      ) {
+        alert("Please fill the form properly.");
+      } else {
+        addEmployee(formData);
+        // Reset the form and close the modal
+        setFormData({
+          FirstName: "",
+          LastName: "",
+          Age: "",
+          DateOfJoining: "",
+          Title: "employee", // Default value
+          Department: "it", // Default value
+          EmployeeType: "full", // Default value
+          CurrentStatus: true,
+        });
+        handleClose();
+      }
     }
   };
 
